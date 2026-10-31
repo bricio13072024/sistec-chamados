@@ -1,0 +1,1 @@
+{"name":"sistec-chamados","version":"1.0.0","private":true,"type":"module","main":"server.js","scripts":{"start":"node server.js"},"dependencies":{"express":"^4.22.3","nodemailer":"^6.10.1"}}

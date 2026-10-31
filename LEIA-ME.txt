@@ -1,0 +1,154 @@
+=====================================================================
+  SISTEC CHAMADOS - Sistema de chamados internos de TI + chat
+  Guia de instalacao na rede corporativa
+=====================================================================
+
+O QUE E
+-------
+Um sistema web que roda em UM computador da rede (o "servidor").
+As 20 estacoes (SISTEC001 a SISTEC020) acessam pelo navegador
+(Chrome ou Edge), sem instalar nada nelas.
+
+Ja vem tudo dentro desta pasta, inclusive o Node.js (pasta "runtime").
+Nao precisa de internet para instalar nem para funcionar. A internet so
+e usada para enviar os e-mails de notificacao.
+
+
+---------------------------------------------------------------------
+PASSO 1 - Escolher o computador servidor
+---------------------------------------------------------------------
+Escolha um PC que fique ligado durante o expediente (pode ser o seu).
+Ideal: pedir para o roteador/DHCP reservar um IP FIXO para ele,
+assim o endereco do sistema nunca muda.
+
+Copie esta pasta inteira para ele, por exemplo:
+    C:\SISTEC-Chamados
+
+
+---------------------------------------------------------------------
+PASSO 2 - Liberar o firewall (uma vez so)
+---------------------------------------------------------------------
+Clique com o botao direito em  2-liberar-firewall.bat
+e escolha "Executar como administrador".
+
+
+---------------------------------------------------------------------
+PASSO 3 - Ligar o sistema
+---------------------------------------------------------------------
+Opcao A (recomendada) - iniciar sozinho com o Windows:
+    Botao direito em  3-iniciar-junto-com-windows.bat
+    -> "Executar como administrador".
+    O sistema passa a ligar junto com o PC, em segundo plano,
+    mesmo sem ninguem fazer login.
+
+Opcao B - manual (bom para testar):
+    Duplo clique em  1-iniciar-sistema.bat
+    Uma janela preta abre mostrando o endereco. Mantenha-a aberta.
+
+O endereco sera algo como:   http://192.168.X.X:3000
+(o IP do PC servidor + :3000)
+
+Para descobrir o IP do servidor: abra o Prompt e digite  ipconfig
+(veja "Endereco IPv4").
+
+
+---------------------------------------------------------------------
+PASSO 4 - Seu primeiro acesso (supervisor)
+---------------------------------------------------------------------
+No navegador do servidor abra:  http://localhost:3000
+
+    Usuario: fabricio
+    Senha:   admin@123
+
+Na primeira entrada o sistema pede seu nome, seu e-mail e uma nova senha.
+
+
+---------------------------------------------------------------------
+PASSO 5 - Configurar o envio de e-mails
+---------------------------------------------------------------------
+Menu "Configuracoes" -> "Servidor de e-mail (SMTP)".
+Use os botoes Gmail / Outlook / Microsoft 365 para preencher o servidor.
+
+  * Gmail: e preciso usar uma SENHA DE APP (nao a senha normal).
+    Conta Google -> Seguranca -> Verificacao em duas etapas (ativar)
+    -> Senhas de app -> gerar. Cole a senha de 16 letras no campo Senha.
+  * Microsoft 365 / e-mail da empresa: pergunte ao provedor se o
+    "SMTP autenticado" esta habilitado para a conta.
+
+Depois clique em "Enviar teste". O historico de envios (e erros, se
+houver) aparece em "Ultimos e-mails" na mesma tela.
+
+
+---------------------------------------------------------------------
+PASSO 6 - Nas estacoes
+---------------------------------------------------------------------
+Em cada computador, abra o navegador no endereco do servidor
+(ex.: http://192.168.1.10:3000) e crie um atalho na area de trabalho
+ou nos favoritos.
+
+    Usuario: sistec001 ... sistec020   (o nome da estacao)
+    Senha inicial: sistec@123
+
+No primeiro acesso cada usuario informa nome, e-mail e cria a senha.
+
+
+=====================================================================
+COMO FUNCIONA
+=====================================================================
+CHAMADOS
+  * O usuario abre o chamado: titulo, categoria, prioridade, descricao
+    do problema e anexos (prints com Ctrl+V, fotos, PDFs).
+  * O PRAZO e calculado pela prioridade:
+        Critica 4h | Alta 8h | Media 24h | Baixa 72h
+    (pode mudar em Configuracoes, ou ajustar o prazo de cada chamado)
+  * STATUS: Aberto -> Em andamento -> Aguardando usuario -> Resolvido -> Fechado
+  * Para marcar como Resolvido o supervisor precisa escrever a SOLUCAO.
+  * O usuario confirma a solucao (Fechado) ou reabre o chamado.
+  * Cada estacao so ve os proprios chamados. O supervisor ve todos.
+  * Prazo vencido: o sistema avisa por e-mail automaticamente.
+
+E-MAILS AUTOMATICOS (para voce e para o usuario)
+  * Chamado aberto, mudanca de status, prazo alterado, solucao,
+    chamado fechado/reaberto, prazo vencido.
+  * Mensagens no chamado vao para a outra parte.
+
+CHAT INTERNO
+  * Canal "Geral" com toda a equipe + conversas privadas entre
+    quaisquer estacoes e o supervisor.
+  * Mensagens em tempo real, indicador de online, "digitando...",
+    contador de nao lidas, aviso sonoro e envio de arquivos/prints.
+
+PAINEL
+  * Abertos, em andamento, atrasados, resolvidos no mes, grafico dos
+    ultimos 14 dias, por categoria, estacoes com mais chamados,
+    tempo medio de solucao e % resolvido no prazo.
+
+ESTACOES E USUARIOS (supervisor)
+  * Editar nome/e-mail, desativar estacao, redefinir senha,
+    criar novas estacoes (sistec021, ...).
+
+
+=====================================================================
+MANUTENCAO
+=====================================================================
+BACKUP
+  Todos os dados ficam na pasta  data\  (banco + anexos).
+  Execute  fazer-backup.bat  de tempos em tempos; a copia vai para
+  a pasta  backups\ . Para restaurar, pare o sistema e copie o
+  conteudo de um backup de volta para  data\ .
+
+SENHA DO SUPERVISOR ESQUECIDA
+  Pare o sistema e rode no Prompt, dentro desta pasta:
+    runtime\node.exe resetar-senha-admin.js
+  A senha volta para  admin@123 .
+
+TROCAR A PORTA (se a 3000 estiver em uso)
+  Edite  1-iniciar-sistema.bat  e  servico.bat  e adicione, antes da
+  linha  :loop , a linha:   set PORT=8080
+  Lembre de liberar a nova porta no firewall.
+
+PARAR O INICIO AUTOMATICO
+  Botao direito em  remover-inicio-automatico.bat -> Executar como administrador.
+
+LOG DO SERVIDOR (modo automatico)
+  data\servidor.log
